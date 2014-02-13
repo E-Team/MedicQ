@@ -25,7 +25,7 @@ import android.view.WindowManager.LayoutParams;
 public class MainActivity extends Activity implements OnInitListener,
 		OnClickListener {
 	
-	
+	//this is a comment
 	static String K = "Karim is my Sidekick";
 
 	private int MY_DATA_CHECK_CODE = 0;

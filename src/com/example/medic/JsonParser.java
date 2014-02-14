@@ -26,10 +26,7 @@ public class JsonParser {
 	}
 
 	public ArrayList<JSONObject> getQuestionData() {
-		
-		list = new ArrayList<JSONObject>();
-		
-		
+		list = new ArrayList<JSONObject>();	
 		DefaultHttpClient httpclient = new DefaultHttpClient(
 				new BasicHttpParams());
 		HttpGet httpget = new HttpGet(URL);

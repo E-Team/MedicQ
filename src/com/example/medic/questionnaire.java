@@ -24,19 +24,15 @@ public class questionnaire extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.questions);
 		new Executer().execute();
-		tv  = (TextView) findViewById(R.id.textView1);
-		
-				
+		tv  = (TextView) findViewById(R.id.textView1);					
 	}
 
 	private class Executer extends AsyncTask<String, String, String> {
-
 		@Override
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			tv.setText(g + "\n");
-			
 			for(int i=0;i<questions.size();i++){
 				tv.setText(questions.get(i)+"\n");
 			}
@@ -49,8 +45,7 @@ public class questionnaire extends Activity{
 			JSONObject z = jsonHandler.getuserdata();
 			
 			 questions = new ArrayList<String>();
-			 answers = new ArrayList<String>();
-			
+			 answers = new ArrayList<String>();		
 			 try {
 				g = z.get("totalquestions").toString();
 				

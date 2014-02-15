@@ -12,76 +12,87 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class questionnaire extends Activity{
+public class questionnaire extends Activity {
 
 	TextView tv;
 	ArrayList<String> questions;
 	ArrayList<String> answers;
 	String g = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.questions);
 		new Executer().execute();
-		tv  = (TextView) findViewById(R.id.textView1);					
+		tv = (TextView) findViewById(R.id.textView1);
 	}
 
 	private class Executer extends AsyncTask<String, String, String> {
 		@Override
 		protected void onPostExecute(String result) {
 			// TODO Auto-generated method stub
+			if(result == null){
 			super.onPostExecute(result);
-			tv.setText(g + "\n");
-			for(int i=0;i<questions.size();i++){
-				tv.setText(questions.get(i)+"\n");
+				Toast.makeText(getApplicationContext(), "RESULT EMPTY", Toast.LENGTH_SHORT).show();
+			}else{
+				tv.setText(result + "\n");
+				
 			}
 		}
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			JsonParser jsonHandler = new JsonParser("http://ismailzd.co.uk/JsonQ.json");
-			ArrayList<JSONObject> y = jsonHandler.getQuestionData();
-			JSONObject z = jsonHandler.getuserdata();
-			
-			 questions = new ArrayList<String>();
-			 answers = new ArrayList<String>();		
-			 try {
-				g = z.get("totalquestions").toString();
+			JSONParser jsonHandler = new JSONParser("http://ismailzd.co.uk/JSONData.txt");
+			JSONObject patientList = jsonHandler.patientDetails();
+			JSONObject questionnaire = jsonHandler.patientQuestionnaire();
+			JSONArray answers = jsonHandler.patientAnswers();
+			JSONArray images = jsonHandler.patientImage();
+			JSONArray TextHighlight = jsonHandler.patientTextHighlight();
+			String result = "";
+			try {
+				String patientID = patientList.getString("patientID")
+						.toString();
+				String name = patientList.getString("patientName").toString();
+				String gender = patientList.getString("gender").toString();
+				String questionNum = patientList.getString("totalquestions")
+						.toString();
+				System.out.println(name);
+				result = "Patient ID: " + patientID + " \nName: " + name
+						+ "\nGender: " + gender + "\nQuestion Number: "
+						+ questionNum;
+				String questionID = questionnaire.getString("QuestionID")
+						.toString();
+				String question = questionnaire.getString("Question")
+						.toString();
+				String type = questionnaire.getString("Type").toString();
+				String isImage = questionnaire.getString("isImage").toString();
+				result += "\nQuestion ID: " + questionID + "\nQuestion:  "
+						+ question + "\nType: " + type + "\nImages: " + isImage;
+				result += "\nAnswers: \n";
+				for (int i = 0; i < answers.length(); i++) {
+
+					result += i+1+"."+answers.get(i).toString()+"\n";
+				}
+				result += "\nImage URL: \n";
+				for (int i = 0; i <images.length(); i++) {
+
+					result += i+1+"."+images.get(i).toString()+"\n";
+				}
 				
-				for(JSONObject j : y){
-					String temp = (String) j.getJSONObject("Question").getString(("value".toString()));
-					String temp2 = (String) j.getJSONObject("Answers").getJSONObject("0").getString(("value".toString()));
-					questions.add(temp);
-					answers.add(temp2);
-					
-				}	
-				Log.d("Karim is my Sidekick","QUESTIONS: "+ questions);
-				Log.d("Karim is my Sidekick","ANSWERS: "+ answers);
-				
+				result += "\nText to be Highlighted: \n";
+				for (int i = 0; i <TextHighlight.length(); i++) {
+
+					result += i+1+"."+TextHighlight.get(i).toString()+"\n";
+				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			  
-						
-		
-				
-					
-				
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			return null;
+			return result;
 		}
 
-		
-		
 	}
 }

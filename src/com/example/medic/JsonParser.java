@@ -40,8 +40,10 @@ public class JsonParser {
 			}
 			jRay = new JSONArray(EntityUtils.toString(entity));
 			Log.d("JRAY", jRay.toString());
-			
+				
+			///here i want/we all can have the Json to have male or female based on the number!! 1 for F... 2 for M
 			JSONArray j1 = jRay.getJSONArray(1);
+			//patient info will be at 0 index of JSONarray
 			userdata = (JSONObject) jRay.get(0);
 			for (int i = 0; i < j1.length(); i++) {	
 			list.add(j1.getJSONObject(i));

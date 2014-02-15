@@ -33,6 +33,11 @@
             android:name="com.example.medic.questionnaire"
             
         ></activity>
+         <activity
+            android:name="com.example.medic.ViewPagerActivity"
+            
+        ></activity>
+                 
     </application>
 
 </manifest>

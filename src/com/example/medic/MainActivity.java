@@ -41,11 +41,12 @@ public class MainActivity extends Activity {
 		beginbutton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+			//	Intent i = new Intent(getBaseContext(), ViewPagerActivity.class);
 				Intent i = new Intent(getBaseContext(), questionnaire.class);
 				// working slight delay on first time...
 				sp = new SpeakOut(getBaseContext(), MY_DATA_CHECK_CODE,
 						"Starting Questionnaire.     First Question");
-				// startActivity(i);
+				 startActivity(i);
 			}
 		});
 

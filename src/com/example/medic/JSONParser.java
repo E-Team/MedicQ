@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -64,7 +62,7 @@ public class JsonParser {
 		return globalArray;
 	}
 
-	public JSONObject patientDetails() {
+	public JSONObject getPatientDetailObject() {
 		System.out.println(arrayData().toString());
 		JSONObject patientObj = null;
 		try {
@@ -75,21 +73,24 @@ public class JsonParser {
 		}
 		return patientObj;
 	}
+	
+	
+	
 	public JSONArray accessToMainObject() {
 		JSONArray questionnaire = null;
 		try {
-			if (patientDetails().getString("gender").equals("female")) {
+			if (getPatientDetailObject().getString("gender").equals("female")) {
 				questionnaire = arrayData().getJSONArray(1);// Female JSON
 			} else {
 				questionnaire = arrayData().getJSONArray(2);// Male JSON
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return questionnaire;
 	}
-	public JSONObject patientQuestionnaire() {
+
+	public JSONObject getQuestionsArray() {
 		JSONObject questionnaireObj = null;
 		try {
 			JSONArray questionnaire = accessToMainObject();
@@ -103,7 +104,7 @@ public class JsonParser {
 		return questionnaireObj;
 	}
 
-	public JSONArray patientAnswers() {
+	public JSONArray getAnswerArray() {
 		JSONArray questionnaireObj = null;
 		try {
 			JSONArray questionnaire = accessToMainObject();// Male JSON
@@ -116,7 +117,8 @@ public class JsonParser {
 		}
 		return questionnaireObj;
 	}
-	public JSONArray patientImage() {
+	
+	public JSONArray getImagesArray() {
 		JSONArray imageObj = null;
 		try {
 			JSONArray image = accessToMainObject();
@@ -128,7 +130,8 @@ public class JsonParser {
 		}
 		return imageObj;
 	}
-	public JSONArray patientTextHighlight() {
+	
+	public JSONArray getTextHighlightArray() {
 		JSONArray highlightObj = null;
 		try {
 			JSONArray textHighlight = accessToMainObject();

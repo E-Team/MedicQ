@@ -11,10 +11,9 @@ public class PatientInfo {
 	String gender = null;
 	String numquestions = null;
 	
-	public PatientInfo(String pname, String gender,String questionNum,String pid){
+	public PatientInfo(String pname, String gender,String pid){
 		PatientName = pname;
 		this.gender = gender;
-		numquestions = questionNum;
 		Patientid = pid;
 	}
 

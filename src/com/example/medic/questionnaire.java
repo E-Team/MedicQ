@@ -44,11 +44,11 @@ public class questionnaire extends Activity {
 		@Override
 		protected String doInBackground(String... arg0) {
 			JsonParser jsonHandler = new JsonParser("http://ismailzd.co.uk/JSONData.txt");
-			JSONObject patientList = jsonHandler.patientDetails();
-			JSONObject questionnaire = jsonHandler.patientQuestionnaire();
-			JSONArray answers = jsonHandler.patientAnswers();
-			JSONArray images = jsonHandler.patientImage();
-			JSONArray TextHighlight = jsonHandler.patientTextHighlight();
+			JSONObject patientList = jsonHandler.getPatientDetailObject();
+			JSONObject questionnaire = jsonHandler.getQuestionsArray();
+			JSONArray answers = jsonHandler.getAnswerArray();
+			JSONArray images = jsonHandler.getImagesArray();
+			JSONArray TextHighlight = jsonHandler.getTextHighlightArray();
 			String result = "";
 			try {
 				
@@ -58,18 +58,17 @@ public class questionnaire extends Activity {
 						.toString();
 				String name = patientList.getString("patientName").toString();
 				String gender = patientList.getString("gender").toString();
-				String questionNum = patientList.getString("totalquestions")
-						.toString();
+				
 				System.out.println(name);
 				
 				ArrayList<PatientInfo> questionsArrayList = new ArrayList<PatientInfo>();
-				PatientInfo p = new PatientInfo(name, gender, questionNum, patientID);
+				PatientInfo p = new PatientInfo(name, gender, patientID);
 				questionsArrayList.add(p);
 				
 				
 				result = "Patient ID: " + patientID + " \nName: " + name
-						+ "\nGender: " + gender + "\nQuestion Number: "
-						+ questionNum;
+						+ "\nGender: " + gender + "\nQuestion Number: ";
+				
 				String questionID = questionnaire.getString("QuestionID")
 						.toString();
 				String question = questionnaire.getString("Question")
@@ -85,8 +84,10 @@ public class questionnaire extends Activity {
 				
 				
 				for (int i = 0; i < answers.length(); i++) {
+					
+					//answers.get(0).get
 
-					result += i+1+"."+answers.get(i).toString()+"\n";
+					result += i+1+"."+answers.get(0).toString()+"\n";
 				}
 			
 				//SKIPPED THIS FOR NOW KAZIM

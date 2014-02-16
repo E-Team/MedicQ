@@ -31,9 +31,9 @@ public class ViewPagerActivity extends FragmentActivity {
 	private List<Fragment> getFragments() {
 		List<Fragment> fList = new ArrayList<Fragment>();
 
+		fList.add(eachQuestion.newInstance("Patientinfo"));
 		fList.add(eachQuestion.newInstance("Question 1"));
 		fList.add(eachQuestion.newInstance("Question 2"));
-		fList.add(eachQuestion.newInstance("Question 3"));
 
 		return fList;
 	}

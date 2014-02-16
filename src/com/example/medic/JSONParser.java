@@ -17,12 +17,12 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-public class JSONParser {
+public class JsonParser {
 	private String URL;
 	private JSONArray globalArray;
 	private JSONObject userdata;
 
-	public JSONParser(String URL) {
+	public JsonParser(String URL) {
 		this.URL = URL;
 	}
 

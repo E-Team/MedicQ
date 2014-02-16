@@ -32,7 +32,6 @@ public class questionnaire extends Activity {
 	private class Executer extends AsyncTask<String, String, String> {
 		@Override
 		protected void onPostExecute(String result) {
-			// TODO Auto-generated method stub
 			if(result == null){
 			super.onPostExecute(result);
 				Toast.makeText(getApplicationContext(), "RESULT EMPTY", Toast.LENGTH_SHORT).show();
@@ -44,7 +43,7 @@ public class questionnaire extends Activity {
 
 		@Override
 		protected String doInBackground(String... arg0) {
-			JSONParser jsonHandler = new JSONParser("http://ismailzd.co.uk/JSONData.txt");
+			JsonParser jsonHandler = new JsonParser("http://ismailzd.co.uk/JSONData.txt");
 			JSONObject patientList = jsonHandler.patientDetails();
 			JSONObject questionnaire = jsonHandler.patientQuestionnaire();
 			JSONArray answers = jsonHandler.patientAnswers();
@@ -52,6 +51,9 @@ public class questionnaire extends Activity {
 			JSONArray TextHighlight = jsonHandler.patientTextHighlight();
 			String result = "";
 			try {
+				
+				
+				
 				String patientID = patientList.getString("patientID")
 						.toString();
 				String name = patientList.getString("patientName").toString();
@@ -59,6 +61,12 @@ public class questionnaire extends Activity {
 				String questionNum = patientList.getString("totalquestions")
 						.toString();
 				System.out.println(name);
+				
+				ArrayList<PatientInfo> questionsArrayList = new ArrayList<PatientInfo>();
+				PatientInfo p = new PatientInfo(name, gender, questionNum, patientID);
+				questionsArrayList.add(p);
+				
+				
 				result = "Patient ID: " + patientID + " \nName: " + name
 						+ "\nGender: " + gender + "\nQuestion Number: "
 						+ questionNum;
@@ -68,24 +76,36 @@ public class questionnaire extends Activity {
 						.toString();
 				String type = questionnaire.getString("Type").toString();
 				String isImage = questionnaire.getString("isImage").toString();
+				
+				
 				result += "\nQuestion ID: " + questionID + "\nQuestion:  "
 						+ question + "\nType: " + type + "\nImages: " + isImage;
 				result += "\nAnswers: \n";
+
+				
+				
 				for (int i = 0; i < answers.length(); i++) {
 
 					result += i+1+"."+answers.get(i).toString()+"\n";
 				}
-				result += "\nImage URL: \n";
+			
+				//SKIPPED THIS FOR NOW KAZIM
+			/*result += "\nImage URL: \n";
 				for (int i = 0; i <images.length(); i++) {
 
 					result += i+1+"."+images.get(i).toString()+"\n";
 				}
 				
+				
+				
 				result += "\nText to be Highlighted: \n";
 				for (int i = 0; i <TextHighlight.length(); i++) {
 
-					result += i+1+"."+TextHighlight.get(i).toString()+"\n";
-				}
+					result += i+1+"."+TextHighlight.get(i).toString()+"\n";}
+			 * 	
+			 */
+				
+				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

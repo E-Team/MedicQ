@@ -120,29 +120,9 @@ public class MainActivity extends Activity {
 					tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, (float) (x - 10));
 			}
 		});
-		
-		testSocket();
-		
+
 	}
 
-	public void testSocket(){
-		SocketClient testThread = new SocketClient("localhost", 1234);
-		try {
-			Thread.sleep(9000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		testThread.getJSON();
-		try {
-			Thread.sleep(9000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		testThread.sendQResults("THESE ARE THE RESULTS");
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

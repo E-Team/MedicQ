@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -15,20 +13,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.medicObjects.SurveyQEntiry;
-
 import android.util.Log;
 
-public class JsonParseHandler {
+public class JsonParser {
 	private String URL;
 	private JSONArray globalArray;
-	ArrayList<JSONArray> js;
+	private JSONObject userdata;
 
-	public JsonParseHandler(String URL) {
+	public JsonParser(String URL) {
 		this.URL = URL;
 	}
 
-	public JSONArray topLevelJSON() {
+	public JSONArray arrayData() {
 		HttpClient client = new DefaultHttpClient();
 		HttpGet get = new HttpGet(URL);
 		StringBuilder content = new StringBuilder();
@@ -67,69 +63,65 @@ public class JsonParseHandler {
 	}
 
 	public JSONObject getPatientDetailObject() {
+		System.out.println(arrayData().toString());
 		JSONObject patientObj = null;
 		try {
-			patientObj = topLevelJSON().getJSONArray(0).getJSONObject(0);
+			JSONArray patientGlobal = arrayData().getJSONArray(0);
+			patientObj = patientGlobal.getJSONObject(0);
+
 		} catch (JSONException e) {
 		}
 		return patientObj;
 	}
-
-	public ArrayList<JSONArray> allQsANDAnsJSONArray() {
-		JSONArray allQuestionAnswers = null;
-		js = new ArrayList<JSONArray>();
+	
+	
+	
+	public JSONArray accessToMainObject() {
+		JSONArray questionnaire = null;
 		try {
-			for (int i = 1; i < topLevelJSON().length(); i++) {
-				allQuestionAnswers = topLevelJSON().getJSONArray(i);
-				js.add(allQuestionAnswers);
+			if (getPatientDetailObject().getString("gender").equals("female")) {
+				questionnaire = arrayData().getJSONArray(1);// Female JSON
+			} else {
+				questionnaire = arrayData().getJSONArray(2);// Male JSON
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return js;
+		return questionnaire;
 	}
 
-	public ArrayList<JSONObject> getQuestionsArray() {
-
+	public JSONObject getQuestionsArray() {
 		JSONObject questionnaireObj = null;
-		ArrayList<JSONObject> qArrays = new ArrayList<JSONObject>();
 		try {
-			int x = allQsANDAnsJSONArray().size();
+			JSONArray questionnaire = accessToMainObject();
+			JSONObject questionnaireArray = questionnaire.getJSONObject(0);
+			questionnaireObj = questionnaireArray.getJSONObject("QuestionInfo");
 
-			for (int i = 0; i < x; i++) {
-				JSONObject questionnaireArray = allQsANDAnsJSONArray().get(i)
-						.getJSONObject(0);
-				questionnaireObj = questionnaireArray
-						.getJSONObject("QuestionInfo");
-				qArrays.add(questionnaireObj);
-			}
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return qArrays;
+		return questionnaireObj;
 	}
 
-	public ArrayList<JSONArray> getAnswerArray() {
+	public JSONArray getAnswerArray() {
 		JSONArray questionnaireObj = null;
-		ArrayList<JSONArray> AArrays = new ArrayList<JSONArray>();
 		try {
-			int x = allQsANDAnsJSONArray().size();
-			for (int i = 0; i < x; i++) {
-				JSONObject questionnaireArray = allQsANDAnsJSONArray().get(i)
-						.getJSONObject(0);
-				questionnaireObj = questionnaireArray.getJSONArray("Answers");
-				AArrays.add(questionnaireObj);
-			}
+			JSONArray questionnaire = accessToMainObject();// Male JSON
+			JSONObject questionnaireArray = questionnaire.getJSONObject(0);
+			questionnaireObj = questionnaireArray.getJSONArray("Answers");
+			Log.v("Questionnaire Answers", questionnaireObj.toString());
 		} catch (JSONException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return AArrays;
+		return questionnaireObj;
 	}
-
+	
 	public JSONArray getImagesArray() {
 		JSONArray imageObj = null;
 		try {
-			JSONArray image = allQsANDAnsJSONArray().get(0);
+			JSONArray image = accessToMainObject();
 			JSONObject questionnaireArray = image.getJSONObject(0);
 			imageObj = questionnaireArray.getJSONArray("Images");
 		} catch (JSONException e) {
@@ -138,11 +130,11 @@ public class JsonParseHandler {
 		}
 		return imageObj;
 	}
-
+	
 	public JSONArray getTextHighlightArray() {
 		JSONArray highlightObj = null;
 		try {
-			JSONArray textHighlight = allQsANDAnsJSONArray().get(0);
+			JSONArray textHighlight = accessToMainObject();
 			JSONObject highlightArray = textHighlight.getJSONObject(0);
 			highlightObj = highlightArray.getJSONArray("textFormat");
 		} catch (JSONException e) {
@@ -151,5 +143,9 @@ public class JsonParseHandler {
 		}
 		return highlightObj;
 	}
+
+	
+
+	
 
 }

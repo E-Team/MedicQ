@@ -1,62 +1,151 @@
 package com.example.medic;
 
-import java.util.ArrayList;
-
-import org.apache.http.HttpEntity;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
 
 public class JsonParser {
-	String URL;
-	String result;
-	ArrayList<JSONObject> list;
-	JSONArray jRay;
-	JSONObject userdata;
+	private String URL;
+	private JSONArray globalArray;
+	private JSONObject userdata;
 
 	public JsonParser(String URL) {
 		this.URL = URL;
 	}
 
-	public ArrayList<JSONObject> getQuestionData() {
-		list = new ArrayList<JSONObject>();	
-		DefaultHttpClient httpclient = new DefaultHttpClient(
-				new BasicHttpParams());
-		HttpGet httpget = new HttpGet(URL);
-
+	public JSONArray arrayData() {
+		HttpClient client = new DefaultHttpClient();
+		HttpGet get = new HttpGet(URL);
+		StringBuilder content = new StringBuilder();
 		try {
-			HttpResponse response = httpclient.execute(httpget);
-			int stat = response.getStatusLine().getStatusCode();
-			HttpEntity entity = null;
-			if (stat == HttpStatus.SC_OK) {
-				entity = response.getEntity();
+			HttpResponse response = client.execute(get);
+			int responseCode = response.getStatusLine().getStatusCode();
+			if (responseCode == 200) {
+				InputStream in = response.getEntity().getContent();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(in));
+				String readLine = reader.readLine();
+				while (readLine != null) {
+					content.append(readLine);
+					readLine = reader.readLine();
+				}
+				/**
+				 * Important
+				 */
+				try {
+					globalArray = new JSONArray(content.toString());
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			} else {
+				Log.w("DATA RETRIEVAL",
+						"Unable to read data.  HTTP response code = "
+								+ responseCode);
+				content = null;
 			}
-			jRay = new JSONArray(EntityUtils.toString(entity));
-			Log.d("JRAY", jRay.toString());
-			
-			JSONArray j1 = jRay.getJSONArray(1);
-			userdata = (JSONObject) jRay.get(0);
-			for (int i = 0; i < j1.length(); i++) {	
-			list.add(j1.getJSONObject(i));
-			}
-
-		} catch (Exception e) {
-			Log.d("JSON Exc", e.toString());
-			result = "nothing";
+		} catch (ClientProtocolException e) {
+			Log.e("readData", "ClientProtocolException:\n" + e.getMessage());
+		} catch (IOException e) {
+			Log.e("readData", "IOException:\n+e.getMessage()");
 		}
-		return list;
-	}	
-	
-	public JSONObject getuserdata(){
-		return userdata;
+		return globalArray;
 	}
 
-}
+	public JSONObject getPatientDetailObject() {
+		System.out.println(arrayData().toString());
+		JSONObject patientObj = null;
+		try {
+			JSONArray patientGlobal = arrayData().getJSONArray(0);
+			patientObj = patientGlobal.getJSONObject(0);
 
+		} catch (JSONException e) {
+		}
+		return patientObj;
+	}
+	
+	
+	
+	public JSONArray accessToMainObject() {
+		JSONArray questionnaire = null;
+		try {
+			if (getPatientDetailObject().getString("gender").equals("female")) {
+				questionnaire = arrayData().getJSONArray(1);// Female JSON
+			} else {
+				questionnaire = arrayData().getJSONArray(2);// Male JSON
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return questionnaire;
+	}
+
+	public JSONObject getQuestionsArray() {
+		JSONObject questionnaireObj = null;
+		try {
+			JSONArray questionnaire = accessToMainObject();
+			JSONObject questionnaireArray = questionnaire.getJSONObject(0);
+			questionnaireObj = questionnaireArray.getJSONObject("QuestionInfo");
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return questionnaireObj;
+	}
+
+	public JSONArray getAnswerArray() {
+		JSONArray questionnaireObj = null;
+		try {
+			JSONArray questionnaire = accessToMainObject();// Male JSON
+			JSONObject questionnaireArray = questionnaire.getJSONObject(0);
+			questionnaireObj = questionnaireArray.getJSONArray("Answers");
+			Log.v("Questionnaire Answers", questionnaireObj.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return questionnaireObj;
+	}
+	
+	public JSONArray getImagesArray() {
+		JSONArray imageObj = null;
+		try {
+			JSONArray image = accessToMainObject();
+			JSONObject questionnaireArray = image.getJSONObject(0);
+			imageObj = questionnaireArray.getJSONArray("Images");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return imageObj;
+	}
+	
+	public JSONArray getTextHighlightArray() {
+		JSONArray highlightObj = null;
+		try {
+			JSONArray textHighlight = accessToMainObject();
+			JSONObject highlightArray = textHighlight.getJSONObject(0);
+			highlightObj = highlightArray.getJSONArray("textFormat");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return highlightObj;
+	}
+
+	
+
+	
+
+}
